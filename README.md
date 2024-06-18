@@ -49,7 +49,7 @@ Once you have cloned the repository and installed the dependencies, you can run 
 ## Images
 ### Default GUI Interface
 ![Screenshot 2024-06-18 235604](https://github.com/T1A0R3S2H/Basic-Image-Processing-GUI/assets/123285559/8d5908ab-fa80-45e2-a61b-2cdbc6b733c3)
-### Selexted an image
+### Select an image
 ![Screenshot 2024-06-18 235630](https://github.com/T1A0R3S2H/Basic-Image-Processing-GUI/assets/123285559/52192ac8-21ee-44f5-b9df-aa8cb2bf9b68)
 ### Original and Processed Image after selecting ```Unblur``` menu
 ![Screenshot 2024-06-18 235645](https://github.com/T1A0R3S2H/Basic-Image-Processing-GUI/assets/123285559/fe2e856d-fd85-4d3d-aaba-3732a8578d64)
