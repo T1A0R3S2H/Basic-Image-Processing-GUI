@@ -4,7 +4,7 @@ This is a straightforward GUI application for basic image processing using OpenC
 ## Features
 
 - Open an image file.
-- Perform various image processing operations such as blurring, unblurring, transparency meter, erosion, dilation, and more.
+- Perform various image processing operations such as blurring, unblurring, transparency, erosion, dilation, and more.
 - Display histograms for the loaded image.
 - Apply filters like summation and derivative.
 
