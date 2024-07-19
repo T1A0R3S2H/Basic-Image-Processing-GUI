@@ -31,14 +31,18 @@ right_canvas.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 # Global variables
 original_image = None
 processed_image = None
+current_shape = None
+start_x, start_y = None, None
 
 # Open image function
 def open_image():
-    global original_image
+    global original_image, processed_image
     file_path = filedialog.askopenfilename()
     if file_path:
         original_image = cv2.imread(file_path)
+        processed_image = original_image.copy()
         display_image(original_image, left_canvas)
+        display_image(processed_image, right_canvas)
 
 # Display image function
 def display_image(img, canvas):
@@ -64,27 +68,52 @@ def display_image(img, canvas):
     canvas.create_image(x_center, y_center, anchor=tk.NW, image=photo)
     canvas.image = photo
 
-# Image processing operations
-def crop_image(event):
-    global processed_image
-    if original_image is not None:
-        x, y = event.x, event.y
-        roi = cv2.selectROI(original_image)
-        cropped = original_image[roi[1]:roi[1]+roi[3], roi[0]:roi[0]+roi[2]]
-        processed_image = cropped
+# Shape drawing functions
+def start_draw(event):
+    global start_x, start_y
+    start_x, start_y = event.x, event.y
+
+def draw_shape(event):
+    global processed_image, start_x, start_y
+    if original_image is not None and current_shape:
+        end_x, end_y = event.x, event.y
+        temp_image = processed_image.copy()
+        if current_shape == "line":
+            cv2.line(temp_image, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
+        elif current_shape == "rectangle":
+            cv2.rectangle(temp_image, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
+        elif current_shape == "circle":
+            radius = int(((end_x - start_x)**2 + (end_y - start_y)**2)**0.5)
+            cv2.circle(temp_image, (start_x, start_y), radius, (0, 0, 255), 2)
+        display_image(temp_image, right_canvas)
+
+def end_draw(event):
+    global processed_image, start_x, start_y
+    if original_image is not None and current_shape:
+        end_x, end_y = event.x, event.y
+        if current_shape == "line":
+            cv2.line(processed_image, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
+        elif current_shape == "rectangle":
+            cv2.rectangle(processed_image, (start_x, start_y), (end_x, end_y), (0, 0, 255), 2)
+        elif current_shape == "circle":
+            radius = int(((end_x - start_x)**2 + (end_y - start_y)**2)**0.5)
+            cv2.circle(processed_image, (start_x, start_y), radius, (0, 0, 255), 2)
         display_image(processed_image, right_canvas)
 
-def crop_image_menu():
-    global original_image, processed_image
-    if original_image is not None:
-        roi = cv2.selectROI("Select ROI", original_image, showCrosshair=True, fromCenter=False)
-        cv2.destroyAllWindows()  # Close the ROI selector window
-        if roi != (0, 0, 0, 0):
-            x, y, w, h = roi
-            cropped = original_image[y:y+h, x:x+w]
-            processed_image = cropped
-            display_image(processed_image, right_canvas)
+def select_shape(shape):
+    global current_shape
+    current_shape = shape
+    status_bar.config(text=f"Selected shape: {shape}")
 
+def deselect_shape(event):
+    global current_shape
+    canvas_width = left_canvas.winfo_width()
+    canvas_height = left_canvas.winfo_height()
+    if event.x < 0 or event.x > canvas_width or event.y < 0 or event.y > canvas_height:
+        current_shape = None
+        status_bar.config(text="Ready")
+
+# Image processing operations
 def blur_image():
     global processed_image
     if original_image is not None:
@@ -162,12 +191,19 @@ edit_menu.add_command(label="Transparency Meter", command=transparency_meter)
 edit_menu.add_command(label="Erode", command=erode_image)
 edit_menu.add_command(label="Dilate", command=dilate_image)
 edit_menu.add_command(label="Histogram", command=show_histogram)
-# edit_menu.add_command(label="Crop", command=crop_image_menu)
 filter_menu = tk.Menu(menu_bar, tearoff=0)
 filter_menu.add_command(label="Summation Filter", command=lambda: apply_filter("summation"))
 filter_menu.add_command(label="Derivative Filter", command=lambda: apply_filter("derivative"))
 edit_menu.add_cascade(label="Filters", menu=filter_menu)
 menu_bar.add_cascade(label="Edit", menu=edit_menu)
+
+# Add new Shape menu
+shape_menu = tk.Menu(menu_bar, font=("Helvetica", 10), tearoff=0)
+shape_menu.add_command(label="Line", command=lambda: select_shape("line"))
+shape_menu.add_command(label="Rectangle", command=lambda: select_shape("rectangle"))
+shape_menu.add_command(label="Circle", command=lambda: select_shape("circle"))
+menu_bar.add_cascade(label="Shapes", menu=shape_menu)
+
 root.config(menu=menu_bar)
 
 # Create a status bar
@@ -177,6 +213,12 @@ status_bar.grid(row=3, column=0, columnspan=2, sticky="ew", padx=10, pady=5)
 # Add keyboard shortcuts
 root.bind("<Control-o>", lambda event: open_image())
 root.bind("<Control-q>", lambda event: root.quit())
+
+# Bind mouse events for drawing
+left_canvas.bind("<ButtonPress-1>", start_draw)
+left_canvas.bind("<B1-Motion>", draw_shape)
+left_canvas.bind("<ButtonRelease-1>", end_draw)
+left_canvas.bind("<Leave>", deselect_shape)
 
 # Ensure images are centered when the window is resized
 def on_resize(event):
