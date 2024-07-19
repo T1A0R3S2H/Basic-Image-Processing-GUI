@@ -56,6 +56,9 @@ Once you have cloned the repository and installed the dependencies, you can run 
 ![Screenshot 2024-06-18 235645](https://github.com/T1A0R3S2H/Basic-Image-Processing-GUI/assets/123285559/fe2e856d-fd85-4d3d-aaba-3732a8578d64)
 ### Histogram of the original image
 ![Screenshot 2024-06-18 235701](https://github.com/T1A0R3S2H/Basic-Image-Processing-GUI/assets/123285559/599674a8-f12a-482f-8b79-ef8d94016bc4)
+### Add different shapes to input image
+![image](https://github.com/user-attachments/assets/4be5de0d-0d38-4946-a5eb-2a6f35f1814b)
+
 
 
 
