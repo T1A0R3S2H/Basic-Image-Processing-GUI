@@ -1,5 +1,5 @@
 # Basic Image Processing GUI
-This is a straightforward GUI for basic image processing using OpenCV and Tkinter.
+A GUI for basic image processing using OpenCV and Tkinter.
 
 ## Features
 
