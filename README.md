@@ -31,7 +31,7 @@ Follow these steps to clone the repository and run the application:
      pip install -r requirements.txt
      ```
 
-## Usage
+## Usage of the GUI
 
 Once you have cloned the repository and installed the dependencies, you can run the application using the following steps:
 
